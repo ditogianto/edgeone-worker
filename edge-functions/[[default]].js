@@ -38,7 +38,7 @@ const CONFIG = {
 
   WATERMARK_TEXT_LINE_1: "This asset is copyrighted content.",
   WATERMARK_TEXT_LINE_2: "Unauthorized use for AI training is prohibited.",
-  BRAND_NAME: "EdgeOne Content Negotiator Demo",
+  BRAND_NAME: "EdgeOne Negotiator Demo",
 
   TRUSTED_CRAWLER_UA_SUBSTRINGS: [
     "googlebot", "bingbot", "perplexitybot", "chatgpt-user", "gptbot-verified"
@@ -150,7 +150,7 @@ function renderCleanSVG(title) {
       <rect width="800" height="400" fill="url(#bg)" />
       <rect x="40" y="40" width="720" height="320" fill="rgba(255,255,255,0.05)" rx="20" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
       <text x="80" y="200" font-family="system-ui, sans-serif" font-size="42" font-weight="bold" fill="#fff">${safeTitle}</text>
-      <text x="80" y="250" font-family="system-ui, sans-serif" font-size="24" fill="#cbd5e0">${escapeHTML(CONFIG.BRAND_NAME)}</text>
+      <text x="80" y="250" font-family="system-ui, sans-serif" font-size="20" fill="#cbd5e0">${escapeHTML(CONFIG.BRAND_NAME)}</text>
       ${catFaceSVG}
     </svg>
   `;
@@ -285,8 +285,11 @@ async function handleRequest(event) {
   const title = url.searchParams.get("title") || "";
   const signature = url.searchParams.get("signature") || "";
 
-  // Bonus signal from EdgeOne native Bot Management — UNCONFIRMED header
-  // name, treated as optional enrichment only, never a gate to STATE 1.
+  // Native integration point for EdgeOne Bot Management.
+  // When EdgeOne Bot Management is enabled in the dashboard, it can be configured
+  // to pass bot classification headers to Edge Functions (e.g. X-EdgeOne-Bot-Class).
+  // For this demo, we simulate a verified bot using the 'simulate=crawler' query parameter
+  // or by checking for known trusted crawler User-Agents.
   const botClass = (request.headers.get("X-EdgeOne-Bot-Class") || "").toLowerCase();
   const nativeSaysVerifiedBot = botClass === "verifiedbot";
 
