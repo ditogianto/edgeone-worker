@@ -13,6 +13,7 @@ This repository contains a Serverless Edge Function that dynamically generates S
 2.  **KV Storage Analytics:**
     *   Records statistics for each state directly into EdgeOne KV Storage.
     *   Built to bypass the lack of `context.waitUntil` by explicitly awaiting KV writes before returning the response.
+    *   *Note on Caching:* States 1 & 2 return `Cache-Control: public, max-age=86400`. State 3 returns `no-cache`. If you are testing live analytics via a frontend UI, ensure you use cache busting (e.g., `?t=timestamp`) on your `fetch` requests; otherwise, EdgeOne's ultra-fast CDN will serve cached assets and bypass your KV logic!
 3.  **On-the-fly SVG Generation:**
     *   No origin servers. No static images. Everything is generated directly at the CDN edge for sub-millisecond response times.
 
