@@ -209,6 +209,18 @@ async function handleRequest(event) {
   const request = event.request;
   const url = new URL(request.url);
 
+  // Handle CORS Preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      }
+    });
+  }
+
   // Dedicated endpoint: analytics stats (used for "Business Checkmate").
   if (url.pathname === "/api/og/stats" && request.method === "GET") {
     const stats = { state1: 0, state2: 0, state3: 0 };
@@ -248,12 +260,12 @@ async function handleRequest(event) {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
     } catch (e) {
-      return new Response("Auth generation failed", { status: 500 });
+      return new Response("Auth generation failed", { status: 500, headers: { "Access-Control-Allow-Origin": "*" } });
     }
   }
 
   if (request.method !== "GET") {
-    return new Response("Method Not Allowed", { status: 405 });
+    return new Response("Method Not Allowed", { status: 405, headers: { "Access-Control-Allow-Origin": "*" } });
   }
 
   const title = url.searchParams.get("title") || "";
