@@ -234,15 +234,17 @@ async function handleRequest(event) {
 
   // Dedicated endpoint: analytics stats (used for "Business Checkmate").
   if (url.pathname === "/api/og/stats" && request.method === "GET") {
-    const stats = { state1: 0, state2: 0, state3: 0 };
+    const stats = { state1: 0, state2: 0, state3: 0, kvBound: !!CONFIG.KV_NAMESPACE };
     if (CONFIG.KV_NAMESPACE) {
       try {
         stats.state1 = parseInt((await CONFIG.KV_NAMESPACE.get("count:state1")) || "0", 10);
         stats.state2 = parseInt((await CONFIG.KV_NAMESPACE.get("count:state2")) || "0", 10);
         stats.state3 = parseInt((await CONFIG.KV_NAMESPACE.get("count:state3")) || "0", 10);
       } catch (e) {
-        // Fallback gracefully on KV failure — zeros are still a valid response.
+        stats.error = e.message || "Unknown KV error";
       }
+    } else {
+      stats.error = "NEGOTIATOR_KV binding is missing or not injected correctly";
     }
     return new Response(JSON.stringify(stats, null, 2), {
       status: 200,
