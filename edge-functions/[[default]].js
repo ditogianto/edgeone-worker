@@ -204,10 +204,9 @@ function renderPRWatermarkSVG() {
 export async function onRequest(context) {
   const { request, env } = context;
   
-  if (env) {
-    CONFIG.HMAC_SECRET = env.HMAC_SECRET_KEY || "";
-    CONFIG.KV_NAMESPACE = env.NEGOTIATOR_KV || null;
-  }
+  // EdgeOne might inject bindings as globals or via env
+  CONFIG.HMAC_SECRET = (env && env.HMAC_SECRET_KEY) || (typeof HMAC_SECRET_KEY !== "undefined" ? HMAC_SECRET_KEY : "");
+  CONFIG.KV_NAMESPACE = (env && env.NEGOTIATOR_KV) || (typeof NEGOTIATOR_KV !== "undefined" ? NEGOTIATOR_KV : null);
 
   const event = {
     request: request,
