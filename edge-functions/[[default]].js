@@ -228,6 +228,7 @@ async function handleRequest(event) {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control"
       }
     });
   }
@@ -292,7 +293,8 @@ async function handleRequest(event) {
   const baseHeaders = {
     "Content-Type": "image/svg+xml; charset=utf-8",
     "Cache-Control": `public, max-age=${CONFIG.CACHE_MAX_AGE_STATE_1_2}, s-maxage=${CONFIG.CACHE_MAX_AGE_STATE_1_2}`,
-    "Access-Control-Allow-Origin": "*"
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control"
   };
 
   // ---- STATE 1: the ONLY way in is a positively valid HMAC signature. ----
@@ -325,7 +327,8 @@ async function handleRequest(event) {
       "Content-Type": "image/svg+xml; charset=utf-8",
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "X-Content-Negotiator-State": "3",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control"
     },
   });
 }
