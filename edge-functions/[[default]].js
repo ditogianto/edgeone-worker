@@ -201,9 +201,21 @@ function renderPRWatermarkSVG() {
 // ---------------------------------------------------------------------------
 // Main handler
 // ---------------------------------------------------------------------------
-addEventListener("fetch", event => {
-  event.respondWith(handleRequest(event));
-});
+export async function onRequest(context) {
+  const { request, env } = context;
+  
+  if (env) {
+    CONFIG.HMAC_SECRET = env.HMAC_SECRET_KEY || "";
+    CONFIG.KV_NAMESPACE = env.NEGOTIATOR_KV || null;
+  }
+
+  const event = {
+    request: request,
+    waitUntil: context.waitUntil ? (p) => context.waitUntil(p) : (p) => {}
+  };
+  
+  return await handleRequest(event);
+}
 
 async function handleRequest(event) {
   const request = event.request;
