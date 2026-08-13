@@ -296,7 +296,7 @@ async function handleRequest(event) {
   // ---- STATE 1: the ONLY way in is a positively valid HMAC signature. ----
   const isValidHMAC = await verifySignature(title, signature, CONFIG.HMAC_SECRET);
   if (isValidHMAC) {
-    if (event.waitUntil) event.waitUntil(recordAnalytics(1));
+    await recordAnalytics(1);
     return new Response(renderCleanSVG(title), {
       status: 200,
       headers: { ...baseHeaders, "X-Content-Negotiator-State": "1" },
@@ -307,7 +307,7 @@ async function handleRequest(event) {
   const isDemoCrawler = url.pathname === "/api/og/demo" && url.searchParams.get("simulate") === "crawler";
   const isVerifiedCrawler = isDemoCrawler || nativeSaysVerifiedBot || isLikelyVerifiedCrawlerByUA(request);
   if (isVerifiedCrawler) {
-    if (event.waitUntil) event.waitUntil(recordAnalytics(2));
+    await recordAnalytics(2);
     return new Response(renderSemanticSVG(title), {
       status: 200,
       headers: { ...baseHeaders, "X-Content-Negotiator-State": "2" },
@@ -316,7 +316,7 @@ async function handleRequest(event) {
 
   // ---- STATE 3: everyone else — DEFAULT, not an edge case. ----
   // This covers: no signature, invalid signature, and any unrecognized bot.
-  if (event.waitUntil) event.waitUntil(recordAnalytics(3));
+  await recordAnalytics(3);
   return new Response(renderPRWatermarkSVG(), {
     status: 200, // never 403 — force ingestion of the watermark
     headers: {
