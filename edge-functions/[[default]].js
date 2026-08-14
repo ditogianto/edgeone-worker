@@ -267,7 +267,7 @@ async function handleRequest(event) {
     "Content-Type": "image/svg+xml; charset=utf-8",
     "Cache-Control": `public, max-age=${CONFIG.CACHE_MAX_AGE_STATE_1_2}, s-maxage=${CONFIG.CACHE_MAX_AGE_STATE_1_2}`,
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control"
+    "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control, X-Edge-Execution-Time"
   };
 
   // ---- STATE 1: the ONLY way in is a positively valid HMAC signature. ----
