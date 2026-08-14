@@ -10,12 +10,14 @@ This repository contains a Serverless Edge Function that dynamically generates S
     *   🟢 **State 1 (Citizen):** Authenticated users (via HMAC-SHA256 signature validation). Gets the clean, high-resolution SVG.
     *   🟡 **State 2 (Merchant):** Verified search bots and AI crawlers (via `simulate=crawler` demo param or User-Agent). Gets a semantic SVG with embedded JSON-LD for Generative Engine Optimization (GEO).
     *   🏴 **State 3 (Bandit):** Unauthenticated scrapers. Gets a degraded, watermarked SVG with copyright warnings (Default fallback route).
-2.  **KV Storage Analytics:**
+2.  **KV Storage Analytics (Non-blocking):**
     *   Records statistics for each state directly into EdgeOne KV Storage.
-    *   Built to bypass the lack of `context.waitUntil` by explicitly awaiting KV writes before returning the response.
+    *   Uses `event.waitUntil()` (mapped from `context.waitUntil`) to offload KV writes to a background thread. This eliminates network latency from the critical path, allowing the Edge Function to return the response instantly.
     *   *Note on Caching:* States 1 & 2 return `Cache-Control: public, max-age=86400`. State 3 returns `no-cache`. If you are testing live analytics via a frontend UI, ensure you use cache busting (e.g., `?t=timestamp`) on your `fetch` requests; otherwise, EdgeOne's ultra-fast CDN will serve cached assets and bypass your KV logic!
-3.  **On-the-fly SVG Generation:**
-    *   No origin servers. No static images. Everything is generated directly at the CDN edge for sub-millisecond response times.
+3.  **On-the-fly SVG Generation & The 1ms Proof:**
+    *   No origin servers. No static images. Everything is generated directly at the CDN edge.
+    *   The Edge Function measures its own compute time (`Date.now() - startTime`) and injects it as an `X-Edge-Execution-Time` HTTP header. Thanks to the non-blocking KV architecture, this compute time consistently hits an absurd **1ms**.
+    *   The headers are fully exposed to cross-origin requests (`Access-Control-Expose-Headers`) so frontend UIs can intercept and display the 1ms proof.
 
 ## Architecture
 
