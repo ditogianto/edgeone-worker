@@ -170,6 +170,7 @@ function renderPRWatermarkSVG() {
 // Main handler
 // ---------------------------------------------------------------------------
 export async function onRequest(context) {
+  const startTime = Date.now();
   const { request, env } = context;
   
   // EdgeOne might inject bindings as globals or via env
@@ -271,10 +272,11 @@ async function handleRequest(event) {
   // ---- STATE 1: the ONLY way in is a positively valid HMAC signature. ----
   const isValidHMAC = await verifySignature(title, signature, CONFIG.HMAC_SECRET);
   if (isValidHMAC) {
-    await recordAnalytics(1);
+    if (context.waitUntil) context.waitUntil(recordAnalytics(1));
+    const execTime = Date.now() - startTime;
     return new Response(renderCleanSVG(title), {
       status: 200,
-      headers: { ...baseHeaders, "X-Content-Negotiator-State": "1" },
+      headers: { ...baseHeaders, "X-Content-Negotiator-State": "1", "X-Edge-Execution-Time": `${execTime}ms` },
     });
   }
 
@@ -282,24 +284,27 @@ async function handleRequest(event) {
   const isDemoCrawler = url.pathname === "/api/og/demo" && url.searchParams.get("simulate") === "crawler";
   const isVerifiedCrawler = isDemoCrawler || nativeSaysVerifiedBot || isLikelyVerifiedCrawlerByUA(request);
   if (isVerifiedCrawler) {
-    await recordAnalytics(2);
+    if (context.waitUntil) context.waitUntil(recordAnalytics(2));
+    const execTime = Date.now() - startTime;
     return new Response(renderSemanticSVG(title), {
       status: 200,
-      headers: { ...baseHeaders, "X-Content-Negotiator-State": "2" },
+      headers: { ...baseHeaders, "X-Content-Negotiator-State": "2", "X-Edge-Execution-Time": `${execTime}ms` },
     });
   }
 
   // ---- STATE 3: everyone else — DEFAULT, not an edge case. ----
   // This covers: no signature, invalid signature, and any unrecognized bot.
-  await recordAnalytics(3);
+  if (context.waitUntil) context.waitUntil(recordAnalytics(3));
+  const execTime = Date.now() - startTime;
   return new Response(renderPRWatermarkSVG(), {
     status: 200, // never 403 — force ingestion of the watermark
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "X-Content-Negotiator-State": "3",
+      "X-Edge-Execution-Time": `${execTime}ms`,
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control"
+      "Access-Control-Expose-Headers": "X-Content-Negotiator-State, Cache-Control, X-Edge-Execution-Time"
     },
   });
 }
