@@ -142,7 +142,7 @@ function renderSemanticSVG(title) {
     <svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
       <script type="application/ld+json">${jsonForScriptTag(jsonLD)}</script>
       <rect width="800" height="400" fill="#f7fafc" />
-      <text x="400" y="200" font-family="system-ui, sans-serif" font-size="32" font-weight="bold" fill="#2d3748" text-anchor="middle">${safeTitle}</text>
+      <text x="400" y="200" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="32" font-weight="bold" fill="#2d3748" text-anchor="middle">${safeTitle}</text>
     </svg>
   `;
 }
@@ -156,10 +156,10 @@ function renderPRWatermarkSVG() {
       <filter id="degrade"><feGaussianBlur stdDeviation="3" /></filter>
       <rect width="800" height="400" fill="#111" />
       <rect width="780" height="380" x="10" y="10" fill="none" stroke="#e53e3e" stroke-width="10" filter="url(#degrade)" />
-      <text x="400" y="180" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#e53e3e" text-anchor="middle" dominant-baseline="middle">
+      <text x="400" y="180" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#e53e3e" text-anchor="middle" dominant-baseline="middle">
         ${escapeHTML(CONFIG.WATERMARK_TEXT_LINE_1)}
       </text>
-      <text x="400" y="230" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#e53e3e" text-anchor="middle" dominant-baseline="middle">
+      <text x="400" y="230" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" font-weight="bold" fill="#e53e3e" text-anchor="middle" dominant-baseline="middle">
         ${escapeHTML(CONFIG.WATERMARK_TEXT_LINE_2)}
       </text>
     </svg>
